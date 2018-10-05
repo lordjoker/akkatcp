@@ -1,0 +1,50 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+
+    <groupId>poc</groupId>
+    <artifactId>akka-tcp</artifactId>
+    <version>1.0-SNAPSHOT</version>
+
+    <properties>
+        <java.version>1.8</java.version>
+        <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+        <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
+        <akka.version>2.5.7</akka.version>
+        <stringtemplate.version>3.2</stringtemplate.version>
+        <postgresql.version>9.4.1209.jre7</postgresql.version>
+        <freemarker.version>2.3.23</freemarker.version>
+        <jasperserver-ireport-plugin.version>3.7.0</jasperserver-ireport-plugin.version>
+        <spock-core.version>1.1-groovy-2.4</spock-core.version>
+        <groovy-all.version>2.4.11</groovy-all.version>
+        <guava.version>21.0</guava.version>
+        <logback.version>1.1.3</logback.version>
+        <jdbi.version>2.78</jdbi.version>
+    </properties>
+
+    <dependencies>
+        <dependency>
+            <groupId>com.typesafe.akka</groupId>
+            <artifactId>akka-actor_2.12</artifactId>
+            <version>${akka.version}</version>
+        </dependency>
+    </dependencies>
+
+    <build>
+        <plugins>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-compiler-plugin</artifactId>
+                <version>3.6.1</version>
+                <configuration>
+                    <source>${java.version}</source>
+                    <target>${java.version}</target>
+                </configuration>
+            </plugin>
+        </plugins>
+    </build>
+
+
+</project>
