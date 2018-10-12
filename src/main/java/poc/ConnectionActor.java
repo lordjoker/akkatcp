@@ -15,9 +15,6 @@ import java.net.InetSocketAddress;
 
 import static akka.actor.Props.create;
 
-/**
- * Created by mwisniewski.
- */
 public class ConnectionActor extends AbstractActor {
 
     final LoggingAdapter log = Logging.getLogger(getContext().getSystem(), getSelf());
@@ -34,33 +31,32 @@ public class ConnectionActor extends AbstractActor {
 
     @Override
     public void preStart() throws Exception {
-        final ActorRef tcp = Tcp.get(getContext().system()).manager();
-        tcp.tell(TcpMessage.bind(getSelf(), new InetSocketAddress("localhost", 9099), 100), getSelf());
+        manager.tell(TcpMessage.bind(getSelf(), new InetSocketAddress("localhost", 9099), 100), getSelf());
+    }
+
+    @Override
+    public void postRestart(Throwable arg0) throws Exception {
+        getContext().stop(getSelf());
     }
 
     @Override
     public Receive createReceive() {
         return receiveBuilder()
                 .match(Bound.class, msg -> {
-                    log.info("{}", msg);
-                    manager.tell(msg, getSelf());
+                    log.info("Listening on [{}]", msg.localAddress());
                 })
-                .match(CommandFailed.class, msg -> getContext().stop(getSelf()))
+                .match(CommandFailed.class, failed -> {
+                    if (failed.cmd() instanceof Tcp.Bind) {
+                        log.warning("Cannot bind to [{}]", ((Tcp.Bind) failed.cmd()).localAddress());
+                        getContext().stop(getSelf());
+                    }
+                })
                 .match(Connected.class, conn -> {
-
-                    log.info("" + conn);
-                    
-                    manager.tell(conn, getSelf());
-                    final ActorRef handler = getContext().actorOf(MessageHandlerActor.props());
-                    getSender().tell(TcpMessage.register(handler), getSelf());
+                    log.info("Received connection from [{}]", conn.remoteAddress());
+                    ActorRef connection = getSender();
+                    ActorRef handler = getContext().actorOf(MessageHandlerActor.props(connection, conn.remoteAddress()));
+                    connection.tell(TcpMessage.register(handler, true, true), getSelf());
                 })
                 .build();
     }
-
-//    @Override
-//    public SupervisorStrategy supervisorStrategy() {
-//        return new OneForOneStrategy(10, Duration.create("1 minute"), DeciderBuilder
-//                .match(Exception.class, e -> SupervisorStrategy.stop())
-//                .build());
-//    }
 }

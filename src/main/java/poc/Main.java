@@ -4,14 +4,11 @@ import akka.actor.ActorRef;
 import akka.actor.ActorSystem;
 import akka.io.Tcp;
 
-/**
- * Created by wisniewskim.
- */
 public class Main {
 
     public static void main(String[] args) {
-        ActorSystem actorSystem = ActorSystem.create();
+        ActorSystem actorSystem = ActorSystem.create("system");
         ActorRef tcpManager = Tcp.get(actorSystem).getManager();
-        actorSystem.actorOf(ConnectionActor.props(tcpManager));
+        actorSystem.actorOf(ConnectionActor.props(tcpManager), "connection");
     }
 }
